@@ -71,20 +71,20 @@ def train(model, optimizer, loss_fn, train_loader, val_loader, epochs=20, device
     for epoch in range(epochs):
         training_loss = 0.0
         valid_loss = 0.0
-        model.train()
-        for batch in train_loader:
-            optimizer.zero_grad()
-            inputs, targets = batch
-            inputs = inputs.to(device)
-            targets = targets.to(device)
-            output = model(inputs)
-            loss = loss_fn(output, targets)
-            loss.backward()
-            optimizer.step()
-            training_loss += loss.data.item() * inputs.size(0)
-        
+        with torch.autograd.profiler.profile(use_cuda=True) as prof:
+            model.train()
+            for batch in train_loader:
+                optimizer.zero_grad()
+                inputs, targets = batch
+                inputs = inputs.to(device)
+                targets = targets.to(device)
+                output = model(inputs)
+                loss = loss_fn(output, targets)
+                loss.backward()
+                optimizer.step()
+                training_loss += loss.data.item() * inputs.size(0)
+        print(prof)
         training_loss /= len(train_loader.dataset)
-        
         model.eval()
         num_correct = 0 
         num_examples = 0
