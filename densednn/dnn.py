@@ -36,6 +36,7 @@ test_data = torchvision.datasets.ImageFolder(root=test_data_path,transform=img_t
 batch_size=64
 
 
+
 train_data_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size)
 val_data_loader  = torch.utils.data.DataLoader(val_data, batch_size=batch_size) 
 test_data_loader  = torch.utils.data.DataLoader(test_data, batch_size=batch_size)
@@ -81,6 +82,7 @@ def train(model, optimizer, loss_fn, train_loader, val_loader, epochs=20, device
             loss.backward()
             optimizer.step()
             training_loss += loss.data.item() * inputs.size(0)
+        
         training_loss /= len(train_loader.dataset)
         
         model.eval()
@@ -101,7 +103,7 @@ def train(model, optimizer, loss_fn, train_loader, val_loader, epochs=20, device
         print('Epoch: {}, Training Loss: {:.2f}, Validation Loss: {:.2f}, accuracy = {:.2f}'.format(epoch, training_loss,
         valid_loss, num_correct / num_examples))
 
-train(simplenet, optimizer,torch.nn.CrossEntropyLoss(), train_data_loader,val_data_loader, epochs=1, device=device)
+train(simplenet, optimizer,torch.nn.CrossEntropyLoss(), train_data_loader,val_data_loader, epochs=5, device=device)
 
 # labels = ['cat','fish']
 
