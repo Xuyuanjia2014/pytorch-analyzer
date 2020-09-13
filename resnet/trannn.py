@@ -9,7 +9,7 @@ from PIL import Image, ImageFile
 import resnet50
 import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 ImageFile.LOAD_TRUNCATED_IMAGES=True
 
@@ -60,7 +60,7 @@ def train(model, optimizer, loss_fn, train_loader, val_loader, epochs=20, device
     for epoch in range(epochs):
         training_loss = 0.0
         valid_loss = 0.0
-        with torch.autograd.profiler.profile(use_cuda=True) as prof:
+        with torch.autograd.profiler.profile(use_cuda=False) as prof:
             model.train()
             for batch in train_loader:
                 optimizer.zero_grad()
@@ -72,7 +72,9 @@ def train(model, optimizer, loss_fn, train_loader, val_loader, epochs=20, device
                 loss.backward()
                 optimizer.step()
                 training_loss += loss.data.item() * inputs.size(0)
-        print(prof)
+        # print(prof)
+        prof.export_chrome_trace("/tmp/resnet50_CPU.json")
+        print("Exported trace")
         training_loss /= len(train_loader.dataset)
         model.eval()
 
