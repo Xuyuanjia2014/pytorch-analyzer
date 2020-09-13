@@ -6,6 +6,7 @@ import torch.nn.functional as F
 import torchvision
 from torchvision import transforms
 from PIL import Image, ImageFile
+import resnet50
 import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
@@ -44,22 +45,7 @@ train_data_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_siz
 val_data_loader  = torch.utils.data.DataLoader(val_data, batch_size=batch_size) 
 test_data_loader  = torch.utils.data.DataLoader(test_data, batch_size=batch_size)
 
-class SimpleNet(nn.Module):
-
-    def __init__(self):
-        super(SimpleNet, self).__init__()
-        self.fc1 = nn.Linear(12288, 84)
-        self.fc2 = nn.Linear(84, 50)
-        self.fc3 = nn.Linear(50,2)
-    
-    def forward(self, x):
-        x = x.view(-1, 12288)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
-
-simplenet = SimpleNet()
+simplenet = resnet50.resnet50
 optimizer = optim.Adam(simplenet.parameters(), lr=0.001)
 
 if torch.cuda.is_available():
